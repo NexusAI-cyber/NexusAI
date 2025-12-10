@@ -1,158 +1,428 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Casino Signals</title>
+    <title>Premium Signals</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        body {
-            background-color: #0f0f1a;
-            color: white;
-            font-family: sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin: 0;
-            padding: 20px;
-            height: 100vh;
-            overflow: hidden;
+        /* --- PREMIUM DESIGN CSS --- */
+        :root {
+            --bg-color: #0f0f1a;
+            --card-bg: rgba(30, 30, 50, 0.7);
+            --accent-color: #00ff88; /* Neon Green */
+            --accent-glow: 0 0 15px rgba(0, 255, 136, 0.4);
+            --text-color: #ffffff;
+            --secondary-text: #a0a0b0;
+            --glass-border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        /* Стиль карточек игр */
-        .grid {
+        body {
+            background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 100%);
+            color: var(--text-color);
+            font-family: 'SF Pro Display', 'Roboto', sans-serif; /* Apple style fonts */
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Анимация появления */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* HEADER */
+        .header {
+            padding: 20px;
+            text-align: center;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .status-badge {
+            display: inline-block;
+            background: rgba(0, 255, 136, 0.1);
+            color: var(--accent-color);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            border: 1px solid rgba(0, 255, 136, 0.2);
+            margin-bottom: 10px;
+            box-shadow: var(--accent-glow);
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 700;
+            background: linear-gradient(90deg, #fff, #a0a0b0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* MENU GRID */
+        #menu-screen {
+            padding: 20px;
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 15px;
-            width: 100%;
-            max-width: 400px;
+            animation: fadeIn 0.8s ease-out;
         }
 
-        .card {
-            background: rgba(30, 30, 50, 0.8);
-            border: 1px solid #333;
-            border-radius: 15px;
+        .game-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: var(--glass-border);
+            border-radius: 20px;
             padding: 20px;
             text-align: center;
+            transition: transform 0.2s, box-shadow 0.2s;
             cursor: pointer;
-            transition: 0.2s;
+            position: relative;
+            overflow: hidden;
         }
 
-        .card:active { transform: scale(0.95); background: #00ff88; color: black; }
-        .card span { font-size: 40px; display: block; margin-bottom: 10px; }
+        .game-card:active {
+            transform: scale(0.96);
+        }
 
-        /* Экран игры Mines */
-        #game-screen { display: none; width: 100%; max-width: 350px; text-align: center; }
-        
+        .game-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.05), transparent);
+            pointer-events: none;
+        }
+
+        .game-icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+            display: block;
+            filter: drop-shadow(0 0 10px rgba(255,255,255,0.2));
+        }
+
+        .game-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .game-desc {
+            font-size: 10px;
+            color: var(--secondary-text);
+            margin-top: 5px;
+        }
+
+        /* GAME SCREEN (Скрыт по умолчанию) */
+        #game-screen {
+            display: none; /* Скрыто */
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            animation: fadeIn 0.3s ease-out;
+            height: 100vh;
+        }
+
+        .back-btn {
+            align-self: flex-start;
+            background: none;
+            border: none;
+            color: var(--secondary-text);
+            font-size: 16px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+
+        /* MINES GRID STYLE */
         .mines-board {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
             gap: 8px;
-            margin: 20px 0;
             background: #252a40;
             padding: 10px;
-            border-radius: 10px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
         }
 
-        .cell {
-            width: 100%;
-            aspect-ratio: 1; /* Квадратные клетки */
+        .mine-cell {
+            width: 50px;
+            height: 50px;
             background: #363b55;
-            border-radius: 5px;
+            border-radius: 8px;
             display: flex;
             justify-content: center;
             align-items: center;
             font-size: 24px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 0 #1e2235;
         }
 
-        .cell.active { background: #00ff88; box-shadow: 0 0 10px #00ff88; }
-
-        .btn {
+        .mine-cell.active {
             background: #00ff88;
-            color: black;
-            border: none;
-            padding: 15px 30px;
-            border-radius: 25px;
-            font-size: 18px;
-            font-weight: bold;
-            width: 100%;
-            cursor: pointer;
+            box-shadow: 0 0 15px #00ff88;
+            transform: translateY(-2px);
         }
-        .btn:disabled { background: #555; }
-        
-        .back-btn { background: none; border: none; color: #888; margin-bottom: 10px; cursor: pointer;}
+
+        /* SIGNAL BUTTON */
+        .signal-btn {
+            background: linear-gradient(90deg, #00ff88, #00cc6a);
+            color: #0f0f1a;
+            border: none;
+            padding: 16px 40px;
+            border-radius: 30px;
+            font-size: 18px;
+            font-weight: 800;
+            width: 100%;
+            max-width: 300px;
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
+            transition: transform 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .signal-btn:active {
+            transform: scale(0.95);
+        }
+
+        .signal-btn:disabled {
+            background: #555;
+            color: #888;
+            box-shadow: none;
+            cursor: not-allowed;
+        }
+
+        /* LOADER */
+        .loader {
+            border: 3px solid rgba(255,255,255,0.1);
+            border-top: 3px solid var(--accent-color);
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: none;
+            margin-left: 10px;
+        }
+
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
     </style>
 </head>
 <body>
 
-    <div id="menu" class="grid">
-        <div class="card" onclick="openGame()">
-            <span>💣</span>
-            <b>MINES</b>
+    <div class="header">
+        <div class="status-badge">
+            <span id="status-text">🟢 SYSTEM ONLINE</span>
         </div>
-        <div class="card" onclick="alert('Скоро!')">
-            <span>✈️</span>
-            <b>AVIATOR</b>
+        <h1 id="main-title">Select Game</h1>
+    </div>
+
+    <div id="menu-screen">
+        <div class="game-card" onclick="openGame('mines')">
+            <span class="game-icon">💣</span>
+            <div class="game-title">MINES</div>
+            <div class="game-desc" id="desc-mines">98% Accuracy</div>
+        </div>
+        <div class="game-card" onclick="openGame('aviator')">
+            <span class="game-icon">✈️</span>
+            <div class="game-title">AVIATOR</div>
+            <div class="game-desc" id="desc-aviator">AI Prediction</div>
+        </div>
+        <div class="game-card" onclick="openGame('lucky')">
+            <span class="game-icon">🚀</span>
+            <div class="game-title">LUCKY JET</div>
+            <div class="game-desc" id="desc-lucky">Strategy V4</div>
+        </div>
+        <div class="game-card" onclick="openGame('slots')">
+            <span class="game-icon">🎰</span>
+            <div class="game-title">SLOTS</div>
+            <div class="game-desc" id="desc-slots">Best Time</div>
         </div>
     </div>
 
     <div id="game-screen">
-        <button class="back-btn" onclick="location.reload()">← Назад</button>
-        <h2>MINES</h2>
-        <div class="mines-board" id="board"></div>
-        <button class="btn" id="signalBtn" onclick="getSignal()">ПОЛУЧИТЬ СИГНАЛ</button>
+        <button class="back-btn" onclick="goBack()">
+            ← <span id="back-text">Back</span>
+        </button>
+        
+        <h2 id="game-name" style="margin-bottom: 30px;">Mines</h2>
+
+        <div id="mines-area" class="mines-board">
+            </div>
+
+        <div id="other-game-area" style="display:none; text-align: center; margin-bottom: 30px;">
+             <div style="font-size: 60px; font-weight: bold; color: var(--accent-color);" id="prediction-number">0.00x</div>
+             <p style="color: #888;">COEFFICIENT</p>
+        </div>
+
+        <button class="signal-btn" id="get-signal-btn" onclick="getSignal()">
+            <span id="btn-text">GET SIGNAL</span>
+            <div class="loader" id="btn-loader"></div>
+        </button>
     </div>
 
     <script>
+        // ИНИЦИАЛИЗАЦИЯ TELEGRAM
         const tg = window.Telegram.WebApp;
-        tg.expand(); // Растянуть на весь экран
+        tg.expand(); // На весь экран
+        tg.disableVerticalSwipes(); // Запрет закрытия свайпом (по возможности)
 
-        // Создаем поле 5x5
-        const board = document.getElementById('board');
-        for (let i = 0; i < 25; i++) {
+        // --- ЛОКАЛИЗАЦИЯ (ЯЗЫКИ) ---
+        const translations = {
+            en: {
+                status: "🟢 SYSTEM ONLINE",
+                select: "Select Game",
+                accuracy: "98% Accuracy",
+                ai: "AI Prediction",
+                strategy: "Strategy V4",
+                time: "Best Time",
+                back: "Back",
+                get_signal: "GET SIGNAL",
+                wait: "ANALYZING..."
+            },
+            ru: {
+                status: "🟢 СИСТЕМА АКТИВНА",
+                select: "Выберите игру",
+                accuracy: "Точность 98%",
+                ai: "AI Прогноз",
+                strategy: "Стратегия V4",
+                time: "Время крутить",
+                back: "Назад",
+                get_signal: "ПОЛУЧИТЬ СИГНАЛ",
+                wait: "АНАЛИЗ..."
+            },
+            // Можно добавить uz, tr, es...
+        };
+
+        // Определяем язык пользователя
+        const userLang = tg.initDataUnsafe.user?.language_code || 'en';
+        const lang = (userLang === 'ru' || userLang === 'uk' || userLang === 'by') ? 'ru' : 'en';
+        const t = translations[lang];
+
+        // Применяем переводы
+        document.getElementById('status-text').innerText = t.status;
+        document.getElementById('main-title').innerText = t.select;
+        document.getElementById('desc-mines').innerText = t.accuracy;
+        document.getElementById('desc-aviator').innerText = t.ai;
+        document.getElementById('desc-lucky').innerText = t.strategy;
+        document.getElementById('desc-slots').innerText = t.time;
+        document.getElementById('back-text').innerText = t.back;
+        document.getElementById('btn-text').innerText = t.get_signal;
+
+        // --- ЛОГИКА ---
+        
+        let currentGame = '';
+
+        // Генерация сетки Mines (5x5)
+        const minesBoard = document.getElementById('mines-area');
+        for(let i=0; i<25; i++) {
             let cell = document.createElement('div');
-            cell.className = 'cell';
-            cell.id = 'cell-' + i;
-            board.appendChild(cell);
+            cell.className = 'mine-cell';
+            cell.id = `cell-${i}`;
+            minesBoard.appendChild(cell);
         }
 
-        function openGame() {
-            document.getElementById('menu').style.display = 'none';
-            document.getElementById('game-screen').style.display = 'block';
+        function openGame(game) {
+            currentGame = game;
+            document.getElementById('menu-screen').style.display = 'none';
+            document.getElementById('game-screen').style.display = 'flex';
+            document.getElementById('game-name').innerText = game.toUpperCase();
+
+            // Переключение интерфейса в зависимости от игры
+            if (game === 'mines') {
+                document.getElementById('mines-area').style.display = 'grid';
+                document.getElementById('other-game-area').style.display = 'none';
+                clearMines();
+            } else {
+                document.getElementById('mines-area').style.display = 'none';
+                document.getElementById('other-game-area').style.display = 'block';
+                document.getElementById('prediction-number').innerText = "0.00x";
+            }
+        }
+
+        function goBack() {
+            document.getElementById('game-screen').style.display = 'none';
+            document.getElementById('menu-screen').style.display = 'grid';
+            // Сброс кнопки
+            resetButton();
         }
 
         function getSignal() {
-            // Очистка
-            document.querySelectorAll('.cell').forEach(c => {
-                c.classList.remove('active');
-                c.innerHTML = '';
-            });
+            const btn = document.getElementById('get-signal-btn');
+            const btnText = document.getElementById('btn-text');
+            const loader = document.getElementById('btn-loader');
 
-            const btn = document.getElementById('signalBtn');
+            // Анимация нажатия и блокировка
+            if (btn.disabled) return;
             btn.disabled = true;
-            btn.innerText = "АНАЛИЗ...";
+            btnText.innerText = t.wait;
+            loader.style.display = 'inline-block';
+            
+            // Вибрация (Haptic Feedback)
+            if (tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
 
-            // Имитация задержки
+            // Имитация задержки "анализа" (2 секунды)
             setTimeout(() => {
-                // Выбираем 3-5 случайных клеток
-                let count = Math.floor(Math.random() * 3) + 3;
-                let cells = [];
+                showResult();
+                resetButton();
+                // Вибрация успеха
+                if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+            }, 2000);
+        }
+
+        function showResult() {
+            if (currentGame === 'mines') {
+                clearMines();
+                // Генерируем от 3 до 5 звезд
+                const count = Math.floor(Math.random() * 3) + 3; 
+                const cells = [];
                 while(cells.length < count) {
                     let r = Math.floor(Math.random() * 25);
                     if(cells.indexOf(r) === -1) cells.push(r);
                 }
-
-                cells.forEach(i => {
-                    let c = document.getElementById('cell-' + i);
-                    c.classList.add('active');
-                    c.innerHTML = '⭐️';
+                
+                cells.forEach(idx => {
+                    const cell = document.getElementById(`cell-${idx}`);
+                    cell.classList.add('active');
+                    cell.innerHTML = '⭐️'; // Можно заменить на картинку
                 });
+            } 
+            else if (currentGame === 'aviator' || currentGame === 'lucky') {
+                // Генерация коэффициента от 1.10 до 3.99
+                let coef = (Math.random() * (4.00 - 1.10) + 1.10).toFixed(2);
+                document.getElementById('prediction-number').innerText = `x${coef}`;
+            }
+            else {
+                // Для слотов или других
+                 document.getElementById('prediction-number').innerText = "SPIN NOW";
+            }
+        }
 
-                btn.disabled = false;
-                btn.innerText = "ПОЛУЧИТЬ СИГНАЛ";
-                tg.HapticFeedback.notificationOccurred('success'); // Вибрация
-            }, 1500);
+        function clearMines() {
+            const cells = document.querySelectorAll('.mine-cell');
+            cells.forEach(c => {
+                c.classList.remove('active');
+                c.innerHTML = '';
+            });
+        }
+
+        function resetButton() {
+            const btn = document.getElementById('get-signal-btn');
+            const btnText = document.getElementById('btn-text');
+            const loader = document.getElementById('btn-loader');
+            
+            btn.disabled = false;
+            btnText.innerText = t.get_signal;
+            loader.style.display = 'none';
         }
     </script>
 </body>
