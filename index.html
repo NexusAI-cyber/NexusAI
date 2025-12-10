@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Casino Signals</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body {
+            background-color: #0f0f1a;
+            color: white;
+            font-family: sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            padding: 20px;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Стиль карточек игр */
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .card {
+            background: rgba(30, 30, 50, 0.8);
+            border: 1px solid #333;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .card:active { transform: scale(0.95); background: #00ff88; color: black; }
+        .card span { font-size: 40px; display: block; margin-bottom: 10px; }
+
+        /* Экран игры Mines */
+        #game-screen { display: none; width: 100%; max-width: 350px; text-align: center; }
+        
+        .mines-board {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+            margin: 20px 0;
+            background: #252a40;
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        .cell {
+            width: 100%;
+            aspect-ratio: 1; /* Квадратные клетки */
+            background: #363b55;
+            border-radius: 5px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+        }
+
+        .cell.active { background: #00ff88; box-shadow: 0 0 10px #00ff88; }
+
+        .btn {
+            background: #00ff88;
+            color: black;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 18px;
+            font-weight: bold;
+            width: 100%;
+            cursor: pointer;
+        }
+        .btn:disabled { background: #555; }
+        
+        .back-btn { background: none; border: none; color: #888; margin-bottom: 10px; cursor: pointer;}
+
+    </style>
+</head>
+<body>
+
+    <div id="menu" class="grid">
+        <div class="card" onclick="openGame()">
+            <span>💣</span>
+            <b>MINES</b>
+        </div>
+        <div class="card" onclick="alert('Скоро!')">
+            <span>✈️</span>
+            <b>AVIATOR</b>
+        </div>
+    </div>
+
+    <div id="game-screen">
+        <button class="back-btn" onclick="location.reload()">← Назад</button>
+        <h2>MINES</h2>
+        <div class="mines-board" id="board"></div>
+        <button class="btn" id="signalBtn" onclick="getSignal()">ПОЛУЧИТЬ СИГНАЛ</button>
+    </div>
+
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.expand(); // Растянуть на весь экран
+
+        // Создаем поле 5x5
+        const board = document.getElementById('board');
+        for (let i = 0; i < 25; i++) {
+            let cell = document.createElement('div');
+            cell.className = 'cell';
+            cell.id = 'cell-' + i;
+            board.appendChild(cell);
+        }
+
+        function openGame() {
+            document.getElementById('menu').style.display = 'none';
+            document.getElementById('game-screen').style.display = 'block';
+        }
+
+        function getSignal() {
+            // Очистка
+            document.querySelectorAll('.cell').forEach(c => {
+                c.classList.remove('active');
+                c.innerHTML = '';
+            });
+
+            const btn = document.getElementById('signalBtn');
+            btn.disabled = true;
+            btn.innerText = "АНАЛИЗ...";
+
+            // Имитация задержки
+            setTimeout(() => {
+                // Выбираем 3-5 случайных клеток
+                let count = Math.floor(Math.random() * 3) + 3;
+                let cells = [];
+                while(cells.length < count) {
+                    let r = Math.floor(Math.random() * 25);
+                    if(cells.indexOf(r) === -1) cells.push(r);
+                }
+
+                cells.forEach(i => {
+                    let c = document.getElementById('cell-' + i);
+                    c.classList.add('active');
+                    c.innerHTML = '⭐️';
+                });
+
+                btn.disabled = false;
+                btn.innerText = "ПОЛУЧИТЬ СИГНАЛ";
+                tg.HapticFeedback.notificationOccurred('success'); // Вибрация
+            }, 1500);
+        }
+    </script>
+</body>
+</html>
