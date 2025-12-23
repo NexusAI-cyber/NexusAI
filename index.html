@@ -14,7 +14,8 @@
 
     body{
       min-height:100vh;
-      padding: 70px 14px calc(92px + env(safe-area-inset-bottom)) 14px;
+      /* Уменьшили нижний отступ с 92px до 20px, так как бара больше нет */
+      padding: 70px 14px calc(20px + env(safe-area-inset-bottom)) 14px;
       color:#fff;
       background:
         radial-gradient(circle at 20% 20%, rgba(151, 71, 255, 0.35), transparent 55%),
@@ -315,39 +316,8 @@
       box-shadow: 0 0 8px rgba(60,255,127,0.9);
     }
 
-    /* Support bottom */
-    .bottom-bar{
-      position: fixed;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      z-index: 60;
-      padding: 10px 12px calc(10px + env(safe-area-inset-bottom)) 12px;
-      background: rgba(0,0,0,0.42);
-      backdrop-filter: blur(14px);
-      border-top: 1px solid rgba(255,255,255,0.08);
-      display:flex;
-      justify-content:center;
-    }
-    .support-btn{
-      width: min(520px, 100%);
-      border:none;
-      cursor:pointer;
-      padding: 12px 14px;
-      border-radius: 16px;
-      font-size: 14px;
-      font-weight: 1000;
-      letter-spacing: 0.02em;
-      text-transform: uppercase;
-      color:#020012;
-      background: linear-gradient(120deg, #ff5ef7, #b46bff);
-      box-shadow:
-        0 0 18px rgba(255,95,247,0.55),
-        0 0 40px rgba(170,110,255,0.32);
-    }
-
     @media (max-width: 600px){
-      body{ padding: 68px 12px calc(92px + env(safe-area-inset-bottom)) 12px; }
+      body{ padding: 68px 12px calc(20px + env(safe-area-inset-bottom)) 12px; }
       .card{ border-radius:24px; padding: 18px 14px 14px; }
       .crash-circle{ width:175px; height:175px; }
       .header-title{ font-size:22px; }
@@ -365,28 +335,19 @@
 
   <div id="app"></div>
 
-  <div class="bottom-bar">
-    <button class="support-btn" id="supportBtn">🛟 SUPPORT</button>
-  </div>
-
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
   <script>
     "use strict";
 
     const BUILD = "BUILD_001";
-    const SUPPORT_USERNAME = "NexusAIlabBot";
+    // SUPPORT CONSTANT REMOVED
 
     const tg = (window.Telegram && window.Telegram.WebApp) ? window.Telegram.WebApp : null;
     try { tg && tg.ready && tg.ready(); } catch(e) {}
     try { tg && tg.expand && tg.expand(); } catch(e) {}
 
-    function openSupport(){
-      const link = `https://t.me/${SUPPORT_USERNAME}`;
-      if (tg && tg.openTelegramLink) tg.openTelegramLink(link);
-      else window.open(link, "_blank");
-    }
-    document.getElementById("supportBtn").addEventListener("click", openSupport);
+    // SUPPORT FUNCTION REMOVED
 
     // ===== LANG / TEXTS =====
     const LANGS = ["en","ru","es","pt","fr"];
@@ -394,7 +355,7 @@
 
     const TEXTS = {
       en: {
-        brandTop:"ASTRAMIND AI",
+        brandTop:"NexusAI",
         brandTitle:"AI SIGNALS",
         brandSub:"Choose the game you want signals for.",
         chooseGame:"Choose a game to get a strategy:",
@@ -407,7 +368,7 @@
         crashBtn:"GET SIGNAL",
         crashWorksAt:(t)=>`Signal updates at <strong>${t}</strong>.<br>Play smart 💥`,
         onlineLabel:"Status:",
-        support:"🛟 SUPPORT",
+        // support:"🛟 SUPPORT", // Unused
         games:{
           gates:"⚡️ Gates of Olympus",
           sweet:"🍬 Sweet Bonanza",
@@ -433,7 +394,7 @@
       },
 
       ru: {
-        brandTop:"ASTRAMIND AI",
+        brandTop:"NexusAI",
         brandTitle:"AI СИГНАЛЫ",
         brandSub:"Выбери игру, для которой нужны сигналы.",
         chooseGame:"Выбери игру, чтобы получить стратегию:",
@@ -446,7 +407,7 @@
         crashBtn:"ПОЛУЧИТЬ СИГНАЛ",
         crashWorksAt:(t)=>`Сигнал обновится в <strong>${t}</strong>.<br>Играй с головой 💥`,
         onlineLabel:"Статус:",
-        support:"🛟 САППОРТ",
+        // support:"🛟 САППОРТ", // Unused
         games:{
           gates:"⚡️ Gates of Olympus",
           sweet:"🍬 Sweet Bonanza",
@@ -472,7 +433,7 @@
       },
 
       es: {
-        brandTop:"ASTRAMIND AI",
+        brandTop:"NexusAI",
         brandTitle:"SEÑALES IA",
         brandSub:"Elige el juego para el que quieres señales.",
         chooseGame:"Elige un juego para obtener una estrategia:",
@@ -485,7 +446,7 @@
         crashBtn:"OBTENER SEÑAL",
         crashWorksAt:(t)=>`La señal se actualiza a las <strong>${t}</strong>.<br>Juega con cabeza 💥`,
         onlineLabel:"Estado:",
-        support:"🛟 SOPORTE",
+        // support:"🛟 SOPORTE", // Unused
         games:{
           gates:"⚡️ Gates of Olympus",
           sweet:"🍬 Sweet Bonanza",
@@ -511,7 +472,7 @@
       },
 
       pt: {
-        brandTop:"ASTRAMIND AI",
+        brandTop:"NexusAI",
         brandTitle:"SINAIS IA",
         brandSub:"Escolhe o jogo para o qual queres sinais.",
         chooseGame:"Escolhe um jogo para obter uma estratégia:",
@@ -524,7 +485,7 @@
         crashBtn:"PEGAR SINAL",
         crashWorksAt:(t)=>`O sinal atualiza às <strong>${t}</strong>.<br>Joga com cabeça 💥`,
         onlineLabel:"Status:",
-        support:"🛟 SUPORTE",
+        // support:"🛟 SUPORTE", // Unused
         games:{
           gates:"⚡️ Gates of Olympus",
           sweet:"🍬 Sweet Bonanza",
@@ -550,7 +511,7 @@
       },
 
       fr: {
-        brandTop:"ASTRAMIND AI",
+        brandTop:"NexusAI",
         brandTitle:"SIGNAUX IA",
         brandSub:"Choisis le jeu pour lequel tu veux des signaux.",
         chooseGame:"Choisis un jeu pour obtenir une stratégie :",
@@ -563,7 +524,7 @@
         crashBtn:"OBTENIR UN SIGNAL",
         crashWorksAt:(t)=>`Le signal se met à jour à <strong>${t}</strong>.<br>Joue intelligemment 💥`,
         onlineLabel:"Statut:",
-        support:"🛟 SUPPORT",
+        // support:"🛟 SUPPORT", // Unused
         games:{
           gates:"⚡️ Gates of Olympus",
           sweet:"🍬 Sweet Bonanza",
@@ -1138,9 +1099,8 @@ Stop-loss : −40% depuis le départ.`,
 
     function updateFixedLabels(){
       const onlineLabelEl = document.getElementById("online-label");
-      const supportBtnEl = document.getElementById("supportBtn");
+      // SUPPORT BTN LOGIC REMOVED
       if (onlineLabelEl) onlineLabelEl.textContent = T().onlineLabel;
-      if (supportBtnEl) supportBtnEl.textContent = T().support;
     }
 
     function createButton(text, className, onClick){
